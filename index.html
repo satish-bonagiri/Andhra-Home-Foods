@@ -51,12 +51,13 @@
     nav {
       position: fixed;
       top: 0; left: 0; right: 0;
-      z-index: 200;
+      z-index: 300;
       display: flex;
+      flex-wrap: nowrap;
       justify-content: space-between;
       align-items: center;
       padding: 1rem 4rem;
-      background: rgba(253, 248, 240, 0.94);
+      background: rgba(253, 248, 240, 0.97);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border-soft);
       box-shadow: 0 2px 20px rgba(200,144,10,.07);
@@ -67,6 +68,9 @@
       align-items: center;
       gap: .75rem;
       text-decoration: none;
+      flex-shrink: 0;
+      z-index: 302;
+      position: relative;
     }
     .nav-logo-mark {
       width: 40px; height: 40px;
@@ -101,6 +105,7 @@
       font-weight: 500;
     }
 
+    /* Desktop nav links */
     .nav-links {
       display: flex;
       gap: 2rem;
@@ -125,22 +130,141 @@
     }
     .nav-cta:hover { background: var(--green-lt) !important; color: #fff !important; }
 
+    /* Hamburger button — hidden on desktop */
     .hamburger {
       display: none;
       flex-direction: column;
+      justify-content: center;
       gap: 5px;
       background: none;
       border: none;
       cursor: pointer;
-      padding: 4px;
+      padding: 6px;
+      position: relative;
+      z-index: 302; /* always above the mobile overlay */
+      flex-shrink: 0;
     }
     .hamburger span {
       display: block;
-      width: 24px; height: 2px;
+      width: 26px; height: 2px;
       background: var(--text);
       border-radius: 2px;
-      transition: .3s;
+      transition: transform .3s ease, opacity .3s ease, background .3s ease;
+      transform-origin: center;
     }
+    /* Animate into × when open */
+    .hamburger.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); background: var(--saffron); }
+    .hamburger.active span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .hamburger.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); background: var(--saffron); }
+
+    /* ── Mobile full-screen menu overlay ── */
+    .mobile-menu-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(253, 248, 240, 0.98);
+      backdrop-filter: blur(16px);
+      z-index: 301; /* above page content, below hamburger button */
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      padding: 6rem 2rem 3rem;
+    }
+    .mobile-menu-overlay.open {
+      display: flex;
+    }
+    .mobile-menu-overlay ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      width: 100%;
+      max-width: 320px;
+    }
+    .mobile-menu-overlay ul li {
+      width: 100%;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    .mobile-menu-overlay ul li:first-child {
+      border-top: 1px solid var(--border-soft);
+    }
+    .mobile-menu-overlay ul li a {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 1.1rem 0.5rem;
+      font-family: var(--serif);
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--text);
+      text-decoration: none;
+      transition: color .2s, padding-left .2s;
+    }
+    .mobile-menu-overlay ul li a:hover { color: var(--saffron); padding-left: 0.8rem; }
+    .mobile-menu-overlay ul li a .menu-arrow {
+      font-size: 1rem;
+      color: var(--border);
+      transition: color .2s, transform .2s;
+    }
+    .mobile-menu-overlay ul li a:hover .menu-arrow { color: var(--saffron); transform: translateX(4px); }
+    .mobile-menu-overlay .menu-order-btn {
+      margin-top: 2rem;
+      display: inline-flex;
+      align-items: center;
+      gap: .6rem;
+      background: var(--green);
+      color: #fff;
+      font-family: var(--sans);
+      font-size: .9rem;
+      font-weight: 500;
+      letter-spacing: .06em;
+      padding: .9rem 2.5rem;
+      border-radius: 2rem;
+      text-decoration: none;
+      box-shadow: 0 4px 16px rgba(45,110,78,.25);
+      transition: background .25s, transform .2s;
+    }
+    .mobile-menu-overlay .menu-order-btn:hover { background: var(--green-lt); transform: translateY(-2px); }
+    .mobile-menu-overlay .menu-brand {
+      margin-top: 2.5rem;
+      font-size: .7rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* Close button inside mobile menu */
+    .menu-close-btn {
+      position: absolute;
+      top: 1.2rem;
+      right: 1.4rem;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--surface2);
+      border: 1.5px solid var(--border-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background .2s, border-color .2s, transform .2s;
+      flex-shrink: 0;
+      z-index: 303;
+    }
+    .menu-close-btn:hover {
+      background: var(--saffron);
+      border-color: var(--saffron);
+      transform: rotate(90deg) scale(1.08);
+    }
+    .menu-close-btn svg {
+      width: 18px; height: 18px;
+      stroke: var(--text);
+      transition: stroke .2s;
+    }
+    .menu-close-btn:hover svg { stroke: #fff; }
 
     /* ── Hero ── */
     #hero {
@@ -1067,8 +1191,11 @@
     .reveal-delay-2 { transition-delay: .2s; }
     .reveal-delay-3 { transition-delay: .3s; }
 
-    /* ── Mobile ── */
+    /* ── Responsive ── */
     @media (max-width: 1024px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }   /* hide desktop links */
+      .hamburger { display: flex; }   /* show hamburger */
       .hero-inner { grid-template-columns: 1fr; text-align: center; }
       .hero-tagline { margin-inline: auto; }
       .hero-actions { justify-content: center; }
@@ -1080,21 +1207,6 @@
     }
 
     @media (max-width: 768px) {
-      nav { padding: 1rem 1.5rem; }
-      .nav-links { display: none; }
-      .hamburger { display: flex; }
-      .nav-links.open {
-        display: flex;
-        flex-direction: column;
-        position: fixed;
-        inset: 0;
-        background: rgba(253,248,240,.97);
-        justify-content: center;
-        align-items: center;
-        gap: 2rem;
-        z-index: 199;
-      }
-      .nav-links.open a { font-size: 1.2rem; }
       section { padding: 4rem 1.5rem; }
       #hero { padding: 7rem 1.5rem 4rem; }
       #specialities { padding: 3rem 1.5rem; }
@@ -1110,508 +1222,562 @@
 </head>
 <body>
 
-  <!-- Nav -->
-  <nav>
-    <a href="#hero" class="nav-brand">
-      <div class="nav-logo-mark">SG</div>
-      <div class="nav-brand-text">
-        <span class="nav-brand-name">Sri Godha Shabari</span>
-        <span class="nav-brand-sub">Andhra Home Foods</span>
-      </div>
-    </a>
-    <ul class="nav-links" id="navLinks">
-      <li><a href="#about" onclick="closeMenu()">About</a></li>
-      <li><a href="#pickles" onclick="closeMenu()">Pickles</a></li>
-      <li><a href="#sweets" onclick="closeMenu()">Sweets</a></li>
-      <li><a href="#snacks" onclick="closeMenu()">Snacks</a></li>
-      <li><a href="#contact" onclick="closeMenu()" class="nav-cta">Order Now</a></li>
-    </ul>
-    <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
-      <span></span><span></span><span></span>
-    </button>
-  </nav>
+<!-- Nav -->
+<nav>
+  <a href="#hero" class="nav-brand">
+    <div class="nav-logo-mark">SG</div>
+    <div class="nav-brand-text">
+      <span class="nav-brand-name">Sri Godha Shabari</span>
+      <span class="nav-brand-sub">Andhra Home Foods</span>
+    </div>
+  </a>
+  <!-- Desktop links -->
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#pickles">Pickles</a></li>
+    <li><a href="#sweets">Sweets</a></li>
+    <li><a href="#snacks">Snacks</a></li>
+    <li><a href="#contact" class="nav-cta">Order Now</a></li>
+  </ul>
+  <!-- Hamburger button -->
+  <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
 
-  <!-- Hero -->
-  <section id="hero">
-    <div class="hero-bg"></div>
-    <div class="hero-inner">
-      <div class="hero-text">
-        <div class="hero-badge">Home Made · Bengaluru</div>
-        <div class="hero-eyebrow">Sri Godha Shabari</div>
-        <h1 class="hero-headline">
-          Taste of <em>Andhra</em>,<br>
-          Made with <span class="green">Love</span>
-        </h1>
-        <p class="hero-tagline">
-          Authentic sweets, traditional snacks &amp; handcrafted pickles — prepared fresh at home using age-old Andhra recipes passed down through generations.
-        </p>
-        <div class="hero-actions">
-          <a href="#sweets" class="btn-primary">
-            Explore Our Menu
-            <svg width="16" height="10" viewBox="0 0 18 10" fill="none"><path d="M1 5h16M12 1l5 4-5 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
-          </a>
-          <a href="#contact" class="btn-secondary">Place an Order</a>
-        </div>
-        <div class="hero-pills">
-          <div class="hero-pill"><span class="dot" style="background:#2d6e4e"></span> Home Made</div>
-          <div class="hero-pill"><span class="dot" style="background:#e8860a"></span> No Preservatives</div>
-          <div class="hero-pill"><span class="dot" style="background:#c62828"></span> 100% Veg</div>
-          <div class="hero-pill"><span class="dot" style="background:#8a6840"></span> Bulk Orders</div>
-        </div>
-      </div>
+<!-- Mobile menu overlay (separate from nav, sits over whole screen) -->
+<div class="mobile-menu-overlay" id="mobileMenu">
+  <!-- Close button -->
+  <button class="menu-close-btn" onclick="closeMenu()" aria-label="Close menu">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round">
+      <line x1="18" y1="6" x2="6" y2="18"/>
+      <line x1="6" y1="6" x2="18" y2="18"/>
+    </svg>
+  </button>
+  <ul>
+    <li><a href="#about" onclick="closeMenu()">About <span class="menu-arrow">→</span></a></li>
+    <li><a href="#pickles" onclick="closeMenu()">Pickles <span class="menu-arrow">→</span></a></li>
+    <li><a href="#sweets" onclick="closeMenu()">Sweets <span class="menu-arrow">→</span></a></li>
+    <li><a href="#snacks" onclick="closeMenu()">Snacks <span class="menu-arrow">→</span></a></li>
+  </ul>
+  <a href="#contact" class="menu-order-btn" onclick="closeMenu()">
+    🛒 Order Now
+  </a>
+  <div class="menu-brand">Sri Godha Shabari · Andhra Home Foods</div>
+</div>
 
-      <div class="hero-visual">
-        <div class="hero-plate">
-          <div class="hero-plate-ring"></div>
-          <div class="hero-plate-ring2"></div>
-          <div class="hero-plate-main">
-            <div class="plate-center-text">
-              <div class="plate-logo">
-                Sri Godha<br>Shabari
-                <span>Truly Delicious</span>
-              </div>
-              <div class="plate-divider"></div>
-              <div class="plate-tagline">
-                Authentic Sweets<br>Traditional Snacks<br>Handcrafted Pickles
-              </div>
-            </div>
-          </div>
-          <div class="hero-float hero-float-1">🍯</div>
-          <div class="hero-float hero-float-2">🥭</div>
-          <div class="hero-float hero-float-3">🌶️</div>
-        </div>
+<!-- Hero -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="hero-badge">Home Made · Bengaluru</div>
+      <div class="hero-eyebrow">Sri Godha Shabari</div>
+      <h1 class="hero-headline">
+        Taste of <em>Andhra</em>,<br>
+        Made with <span class="green">Love</span>
+      </h1>
+      <p class="hero-tagline">
+        Authentic sweets, traditional snacks &amp; handcrafted pickles — prepared fresh at home using age-old Andhra recipes passed down through generations.
+      </p>
+      <div class="hero-actions">
+        <a href="#sweets" class="btn-primary">
+          Explore Our Menu
+          <svg width="16" height="10" viewBox="0 0 18 10" fill="none"><path d="M1 5h16M12 1l5 4-5 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </a>
+        <a href="#contact" class="btn-secondary">Place an Order</a>
+      </div>
+      <div class="hero-pills">
+        <div class="hero-pill"><span class="dot" style="background:#2d6e4e"></span> Home Made</div>
+        <div class="hero-pill"><span class="dot" style="background:#e8860a"></span> No Preservatives</div>
+        <div class="hero-pill"><span class="dot" style="background:#c62828"></span> 100% Veg</div>
+        <div class="hero-pill"><span class="dot" style="background:#8a6840"></span> Bulk Orders</div>
       </div>
     </div>
-  </section>
 
-  <!-- About -->
-  <section id="about" class="section-alt">
-    <div class="about-inner reveal">
-      <div class="about-visual-wrap">
-        <div class="about-card">
-          <div class="about-card-top">
-            <div class="about-card-logo">
-              Sri Godha Shabari
-              <span>Andhra Home Foods</span>
+    <div class="hero-visual">
+      <div class="hero-plate">
+        <div class="hero-plate-ring"></div>
+        <div class="hero-plate-ring2"></div>
+        <div class="hero-plate-main">
+          <div class="plate-center-text">
+            <div class="plate-logo">
+              Sri Godha<br>Shabari
+              <span>Truly Delicious</span>
             </div>
-          </div>
-          <div class="about-card-body">
-            <div class="about-spec-title">Our Specialities</div>
-            <div class="about-specs">
-              <div class="about-spec-item"><span class="spec-dot"></span> Tapeswaram Kaja</div>
-              <div class="about-spec-item"><span class="spec-dot"></span> Putharekulu</div>
-              <div class="about-spec-item"><span class="spec-dot"></span> Special Palakova</div>
-              <div class="about-spec-item"><span class="spec-dot"></span> Veg Pickles (Mango, Lemon, Mixed)</div>
-              <div class="about-spec-item"><span class="spec-dot"></span> Podis &amp; Powders</div>
-              <div class="about-spec-item"><span class="spec-dot"></span> Catering for Functions &amp; Events</div>
-            </div>
-            <div class="about-badge-strip">
-              <div class="about-stat"><strong>100%</strong><span>Home Made</span></div>
-              <div class="about-stat"><strong>Veg</strong><span>Always Pure</span></div>
-              <div class="about-stat"><strong>Fresh</strong><span>Made to Order</span></div>
+            <div class="plate-divider"></div>
+            <div class="plate-tagline">
+              Authentic Sweets<br>Traditional Snacks<br>Handcrafted Pickles
             </div>
           </div>
         </div>
-        <span class="leaf-deco leaf-deco-1">🌿</span>
-        <span class="leaf-deco leaf-deco-2">🍃</span>
-      </div>
-
-      <div class="about-text">
-        <div class="section-label">Our Story</div>
-        <h2 class="section-heading">Handcrafted in our <em>kitchen</em>, straight to your heart</h2>
-        <p>Sri Godha Shabari Andhra Home Foods is a home-based food venture nestled in the heart of Akshayanagar, Bengaluru. We bring the rich, authentic flavors of Andhra Pradesh directly to your doorstep.</p>
-        <p>Every sweet, pickle and snack is prepared fresh using traditional family recipes — no artificial preservatives, no compromise on taste. We believe that the best food comes from a home kitchen filled with love and tradition.</p>
-        <p>We also supply authentic Andhra sweets and snacks for weddings, functions, corporate events and bulk catering. Place your order in advance and we'll make it fresh, just for you.</p>
-        <div class="about-features">
-          <div class="about-feature">
-            <div class="feature-icon">🏠</div>
-            <div class="feature-text">
-              <strong>Home Made</strong>
-              <span>Prepared fresh in a clean home kitchen</span>
-            </div>
-          </div>
-          <div class="about-feature">
-            <div class="feature-icon">🌿</div>
-            <div class="feature-text">
-              <strong>No Preservatives</strong>
-              <span>Pure, natural ingredients only</span>
-            </div>
-          </div>
-          <div class="about-feature">
-            <div class="feature-icon">🎉</div>
-            <div class="feature-text">
-              <strong>Bulk Orders</strong>
-              <span>Functions, weddings &amp; catering</span>
-            </div>
-          </div>
-          <div class="about-feature">
-            <div class="feature-icon">📦</div>
-            <div class="feature-text">
-              <strong>Delivery Available</strong>
-              <span>Bengaluru &amp; nearby areas</span>
-            </div>
-          </div>
-        </div>
+        <div class="hero-float hero-float-1">🍯</div>
+        <div class="hero-float hero-float-2">🥭</div>
+        <div class="hero-float hero-float-3">🌶️</div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- Specialities Band -->
-  <section id="specialities">
-    <div class="spec-band-label">Why Choose Us</div>
-    <div class="spec-band-title">Authentic. Traditional. Delicious.</div>
-    <div class="spec-band-sub">Supply for functions, catering &amp; personal orders across Bengaluru</div>
-    <div class="spec-chips">
-      <div class="spec-chip">🍬 Tapeswaram Kaja</div>
-      <div class="spec-chip">🍰 Putharekulu</div>
-      <div class="spec-chip">🍮 Special Palakova</div>
-      <div class="spec-chip">🥭 Mango Pickle</div>
-      <div class="spec-chip">🍋 Lemon Pickle</div>
-      <div class="spec-chip">🌶️ Mixed Pickle</div>
-      <div class="spec-chip">🫙 Podis &amp; Powders</div>
-      <div class="spec-chip">🎊 Bulk Catering</div>
-    </div>
-  </section>
-
-  <hr class="section-divider"/>
-
-  <!-- Pickles Gallery -->
-  <section id="pickles">
-    <div class="gallery-section reveal">
-      <div class="gallery-section-header">
-        <div>
-          <div class="section-label">Handcrafted</div>
-          <h2 class="section-heading"><em>Pickles</em> &amp; Pachadis</h2>
+<!-- About -->
+<section id="about" class="section-alt">
+  <div class="about-inner reveal">
+    <div class="about-visual-wrap">
+      <div class="about-card">
+        <div class="about-card-top">
+          <div class="about-card-logo">
+            Sri Godha Shabari
+            <span>Andhra Home Foods</span>
+          </div>
         </div>
-        <span class="gallery-count">6 varieties</span>
+        <div class="about-card-body">
+          <div class="about-spec-title">Our Specialities</div>
+          <div class="about-specs">
+            <div class="about-spec-item"><span class="spec-dot"></span> Tapeswaram Kaja</div>
+            <div class="about-spec-item"><span class="spec-dot"></span> Putharekulu</div>
+            <div class="about-spec-item"><span class="spec-dot"></span> Special Palakova</div>
+            <div class="about-spec-item"><span class="spec-dot"></span> Veg Pickles (Mango, Lemon, Mixed)</div>
+            <div class="about-spec-item"><span class="spec-dot"></span> Podis &amp; Powders</div>
+            <div class="about-spec-item"><span class="spec-dot"></span> Catering for Functions &amp; Events</div>
+          </div>
+          <div class="about-badge-strip">
+            <div class="about-stat"><strong>100%</strong><span>Home Made</span></div>
+            <div class="about-stat"><strong>Veg</strong><span>Always Pure</span></div>
+            <div class="about-stat"><strong>Fresh</strong><span>Made to Order</span></div>
+          </div>
+        </div>
       </div>
-      <div class="food-grid food-grid-3">
-        <div class="food-card reveal reveal-delay-1">
-          <div class="food-card-img pkl-1"><span class="food-emoji">🥭</span></div>
-          <div class="food-card-info">
-            <div class="food-card-name">Raw Mango Pickle</div>
-            <div class="food-card-desc">Tangy raw mango pieces marinated in mustard oil, red chilli &amp; traditional Andhra spices.</div>
-            <span class="food-card-tag tag-pkl">Avakaya</span>
+      <span class="leaf-deco leaf-deco-1">🌿</span>
+      <span class="leaf-deco leaf-deco-2">🍃</span>
+    </div>
+
+    <div class="about-text">
+      <div class="section-label">Our Story</div>
+      <h2 class="section-heading">Handcrafted in our <em>kitchen</em>, straight to your heart</h2>
+      <p>Sri Godha Shabari Andhra Home Foods is a home-based food venture nestled in the heart of Akshayanagar, Bengaluru. We bring the rich, authentic flavors of Andhra Pradesh directly to your doorstep.</p>
+      <p>Every sweet, pickle and snack is prepared fresh using traditional family recipes — no artificial preservatives, no compromise on taste. We believe that the best food comes from a home kitchen filled with love and tradition.</p>
+      <p>We also supply authentic Andhra sweets and snacks for weddings, functions, corporate events and bulk catering. Place your order in advance and we'll make it fresh, just for you.</p>
+      <div class="about-features">
+        <div class="about-feature">
+          <div class="feature-icon">🏠</div>
+          <div class="feature-text">
+            <strong>Home Made</strong>
+            <span>Prepared fresh in a clean home kitchen</span>
           </div>
         </div>
-        <div class="food-card reveal reveal-delay-2">
-          <div class="food-card-img pkl-2"><span class="food-emoji">🍋</span></div>
-          <div class="food-card-info">
-            <div class="food-card-name">Lemon Pickle</div>
-            <div class="food-card-desc">Sun-dried lemon pickle with a sharp tangy punch, seasoned with mustard and fenugreek.</div>
-            <span class="food-card-tag tag-pkl">Nimmakaya</span>
+        <div class="about-feature">
+          <div class="feature-icon">🌿</div>
+          <div class="feature-text">
+            <strong>No Preservatives</strong>
+            <span>Pure, natural ingredients only</span>
           </div>
         </div>
-        <div class="food-card reveal reveal-delay-3">
-          <div class="food-card-img pkl-3"><span class="food-emoji">🌶️</span></div>
-          <div class="food-card-info">
-            <div class="food-card-name">Green Chilli Pickle</div>
-            <div class="food-card-desc">Fiery green chillies stuffed with mustard and spice paste — a classic Andhra staple.</div>
-            <span class="food-card-tag tag-pkl">Mirapakaya</span>
+        <div class="about-feature">
+          <div class="feature-icon">🎉</div>
+          <div class="feature-text">
+            <strong>Bulk Orders</strong>
+            <span>Functions, weddings &amp; catering</span>
           </div>
         </div>
-        <div class="food-card reveal reveal-delay-1">
-          <div class="food-card-img pkl-4"><span class="food-emoji">🫚</span></div>
-          <div class="food-card-info">
-            <div class="food-card-name">Gongura Pickle</div>
-            <div class="food-card-desc">Sorrel leaves slow-cooked with red chillies and seasoning — the pride of Andhra cuisine.</div>
-            <span class="food-card-tag tag-pkl">Gongura</span>
-          </div>
-        </div>
-        <div class="food-card reveal reveal-delay-2">
-          <div class="food-card-img pkl-5"><span class="food-emoji">🧅</span></div>
-          <div class="food-card-info">
-            <div class="food-card-name">Mixed Veg Pickle</div>
-            <div class="food-card-desc">A medley of seasonal vegetables pickled together with aromatic Andhra masala blend.</div>
-            <span class="food-card-tag tag-pkl">Mixed</span>
-          </div>
-        </div>
-        <div class="food-card reveal reveal-delay-3">
-          <div class="food-card-img pkl-6"><span class="food-emoji">🫙</span></div>
-          <div class="food-card-info">
-            <div class="food-card-name">Tomato Pickle</div>
-            <div class="food-card-desc">Slow-cooked tomatoes with tamarind and a robust tempering of mustard and dry red chilli.</div>
-            <span class="food-card-tag tag-pkl">Tomato</span>
+        <div class="about-feature">
+          <div class="feature-icon">📦</div>
+          <div class="feature-text">
+            <strong>Delivery Available</strong>
+            <span>Bengaluru &amp; nearby areas</span>
           </div>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <hr class="section-divider"/>
+<!-- Specialities Band -->
+<section id="specialities">
+  <div class="spec-band-label">Why Choose Us</div>
+  <div class="spec-band-title">Authentic. Traditional. Delicious.</div>
+  <div class="spec-band-sub">Supply for functions, catering &amp; personal orders across Bengaluru</div>
+  <div class="spec-chips">
+    <div class="spec-chip">🍬 Tapeswaram Kaja</div>
+    <div class="spec-chip">🍰 Putharekulu</div>
+    <div class="spec-chip">🍮 Special Palakova</div>
+    <div class="spec-chip">🥭 Mango Pickle</div>
+    <div class="spec-chip">🍋 Lemon Pickle</div>
+    <div class="spec-chip">🌶️ Mixed Pickle</div>
+    <div class="spec-chip">🫙 Podis &amp; Powders</div>
+    <div class="spec-chip">🎊 Bulk Catering</div>
+  </div>
+</section>
 
-  <!-- Sweets Gallery -->
-  <section id="sweets" class="section-alt">
-    <div class="gallery-section reveal">
-      <div class="gallery-section-header">
-        <div>
-          <div class="section-label">Traditional Mithai</div>
-          <h2 class="section-heading">Authentic <em>Sweets</em></h2>
-        </div>
-        <span class="gallery-count">6 varieties</span>
-      </div>
-      <div class="food-grid food-grid-3">
-        <div class="food-card reveal reveal-delay-1">
-          <div class="food-card-img swt-1"><span class="food-emoji">🍬</span></div>
-          <div class="food-card-info">
-            <div class="food-card-name">Tapeswaram Kaja</div>
-            <div class="food-card-desc">Crisp layered sweet soaked in sugar syrup — a GI-tagged Andhra delicacy from East Godavari.</div>
-            <span class="food-card-tag tag-swt">Signature</span>
-          </div>
-        </div>
-        <div class="food-card reveal reveal-delay-2">
-          <div class="food-card-img swt-2"><span class="food-emoji">🧁</span></div>
-          <div class="food-card-info">
-            <div class="food-card-name">Putharekulu</div>
-            <div class="food-card-desc">Tissue-thin rice paper rolls filled with jaggery, dry fruits &amp; ghee — melt-in-mouth magic.</div>
-            <span class="food-card-tag tag-swt">Specialty</span>
-          </div>
-        </div>
-        <div class="food-card reveal reveal-delay-3">
-          <div class="food-card-img swt-3"><span class="food-emoji">🍮</span></div>
-          <div class="food-card-info">
-            <div class="food-card-name">Special Palakova</div>
-            <div class="food-card-desc">Rich milk-reduced fudge with cardamom and saffron — slow-cooked to creamy perfection.</div>
-            <span class="food-card-tag tag-swt">Milk Sweet</span>
-          </div>
-        </div>
-        <div class="food-card reveal reveal-delay-1">
-          <div class="food-card-img swt-4"><span class="food-emoji">🟠</span></div>
-          <div class="food-card-info">
-            <div class="food-card-name">Laddu</div>
-            <div class="food-card-desc">Boondi laddus made with pure ghee, besan and fragrant cardamom — perfect for celebrations.</div>
-            <span class="food-card-tag tag-swt">Festive</span>
-          </div>
-        </div>
-        <div class="food-card reveal reveal-delay-2">
-          <div class="food-card-img swt-5"><span class="food-emoji">🍯</span></div>
-          <div class="food-card-info">
-            <div class="food-card-name">Pootharekulu with Jaggery</div>
-            <div class="food-card-desc">The traditional jaggery variant of Putharekulu — unrefined sweetness wrapped in rice paper.</div>
-            <span class="food-card-tag tag-swt">Jaggery</span>
-          </div>
-        </div>
-        <div class="food-card reveal reveal-delay-3">
-          <div class="food-card-img swt-6"><span class="food-emoji">🌸</span></div>
-          <div class="food-card-info">
-            <div class="food-card-name">Mysore Pak</div>
-            <div class="food-card-desc">Classic ghee-rich besan sweet with a melt-away texture and a delicate cardamom note.</div>
-            <span class="food-card-tag tag-swt">Classic</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+<hr class="section-divider"/>
 
-  <hr class="section-divider"/>
-
-  <!-- Snacks Gallery -->
-  <section id="snacks">
-    <div class="gallery-section reveal">
-      <div class="gallery-section-header">
-        <div>
-          <div class="section-label">Crispy &amp; Savoury</div>
-          <h2 class="section-heading">Traditional <em>Snacks</em></h2>
-        </div>
-        <span class="gallery-count">4 varieties</span>
-      </div>
-      <div class="food-grid food-grid-4">
-        <div class="food-card reveal reveal-delay-1">
-          <div class="food-card-img snk-1"><span class="food-emoji">🌾</span></div>
-          <div class="food-card-info">
-            <div class="food-card-name">Muruku</div>
-            <div class="food-card-desc">Crispy rice flour spirals seasoned with cumin, sesame and a hint of red chilli.</div>
-            <span class="food-card-tag tag-snk">Crunchy</span>
-          </div>
-        </div>
-        <div class="food-card reveal reveal-delay-2">
-          <div class="food-card-img snk-2"><span class="food-emoji">🫘</span></div>
-          <div class="food-card-info">
-            <div class="food-card-name">Chegodilu</div>
-            <div class="food-card-desc">Ring-shaped Andhra snack with a subtle spice — a timeless tea-time favourite.</div>
-            <span class="food-card-tag tag-snk">Andhra Classic</span>
-          </div>
-        </div>
-        <div class="food-card reveal reveal-delay-3">
-          <div class="food-card-img snk-3"><span class="food-emoji">🍘</span></div>
-          <div class="food-card-info">
-            <div class="food-card-name">Mixture</div>
-            <div class="food-card-desc">A zesty blend of sev, peanuts, poha flakes and curry leaves — spiced just right.</div>
-            <span class="food-card-tag tag-snk">Mixed</span>
-          </div>
-        </div>
-        <div class="food-card reveal">
-          <div class="food-card-img snk-4"><span class="food-emoji">🌶️</span></div>
-          <div class="food-card-info">
-            <div class="food-card-name">Podi (Spice Powder)</div>
-            <div class="food-card-desc">Idli podi, gun powder &amp; karam podi — homemade spice blends to elevate every meal.</div>
-            <span class="food-card-tag tag-snk">Podi</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <hr class="section-divider"/>
-
-  <!-- Contact -->
-  <section class="section-alt">
-    <div id="contact" class="contact-inner reveal">
-      <div class="contact-info">
-        <div class="section-label">Get in Touch</div>
-        <h2 class="section-heading">Place your <em>order</em> today</h2>
-        <p>Ready to order or have a question? We'd love to hear from you. Reach out directly or fill in the form and we'll get back to you promptly.</p>
-
-        <div class="contact-cards">
-          <div class="contact-card">
-            <div class="contact-card-icon">📞</div>
-            <div class="contact-card-text">
-              <small>Phone / WhatsApp</small>
-              <span>+91 9620397279</span>
-            </div>
-          </div>
-          <div class="contact-card">
-            <div class="contact-card-icon">✉️</div>
-            <div class="contact-card-text">
-              <small>Email</small>
-              <span>godhashabarifoods@gmail.com</span>
-            </div>
-          </div>
-          <div class="contact-card">
-            <div class="contact-card-icon">📍</div>
-            <div class="contact-card-text">
-              <small>Address</small>
-              <span>SNN Raj Serenity, Suraksha Nagar, Yelenahalli, Akshayanagar, Bengaluru – 560076</span>
-            </div>
-          </div>
-          <div class="contact-card">
-            <div class="contact-card-icon">🕐</div>
-            <div class="contact-card-text">
-              <small>Order Lead Time</small>
-              <span>Fresh orders: 24–48 hrs advance notice</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <form class="contact-form" onsubmit="handleSubmit(event)">
-        <div class="form-title">Send us a message 🙏</div>
-        <div class="form-sub">For bulk orders, please mention quantity and date needed.</div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label for="name">Your Name</label>
-            <input type="text" id="name" placeholder="Ravi Kumar" required/>
-          </div>
-          <div class="form-group">
-            <label for="phone">Phone Number</label>
-            <input type="tel" id="phone" placeholder="+91 98765 43210" required/>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="email">Email (Optional)</label>
-          <input type="email" id="email" placeholder="you@example.com"/>
-        </div>
-
-        <div class="form-group">
-          <label for="item">What are you ordering?</label>
-          <select id="item">
-            <option value="" disabled selected>Select a category…</option>
-            <option>Pickles / Pachadis</option>
-            <option>Sweets — Kaja / Putharekulu / Palakova</option>
-            <option>Snacks — Muruku / Chegodilu / Mixture</option>
-            <option>Podi / Spice Powders</option>
-            <option>Bulk / Catering Order</option>
-            <option>Mixed Assortment</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="message">Message / Quantity / Special Request</label>
-          <textarea id="message" placeholder="E.g. 2 kg mango pickle, 1 kg Kaja, required by Sunday…" required></textarea>
-        </div>
-
-        <div class="form-submit-row">
-          <button type="submit" class="btn-form-submit">
-            Send Order Request
-            <svg width="14" height="10" viewBox="0 0 18 10" fill="none"><path d="M1 5h16M12 1l5 4-5 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
-          </button>
-          <span class="form-note">We'll reply within a few hours</span>
-        </div>
-        <p id="form-success">✅ Thank you! We'll get back to you shortly with confirmation.</p>
-      </form>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer>
-    <div class="footer-inner">
+<!-- Pickles Gallery -->
+<section id="pickles">
+  <div class="gallery-section reveal">
+    <div class="gallery-section-header">
       <div>
-        <div class="footer-brand-name">Sri Godha Shabari</div>
-        <div class="footer-brand-tagline">Andhra Home Foods — Truly Delicious</div>
-        <p class="footer-brand-desc">Home-made Andhra sweets, snacks and pickles prepared with love and delivered fresh to your door. Proudly serving families and events across Bengaluru.</p>
+        <div class="section-label">Handcrafted</div>
+        <h2 class="section-heading"><em>Pickles</em> &amp; Pachadis</h2>
       </div>
-      <div>
-        <div class="footer-col-title">Quick Links</div>
-        <ul class="footer-links">
-          <li><a href="#about">About Us</a></li>
-          <li><a href="#pickles">Pickles</a></li>
-          <li><a href="#sweets">Sweets</a></li>
-          <li><a href="#snacks">Snacks</a></li>
-          <li><a href="#contact">Order Now</a></li>
-        </ul>
+      <span class="gallery-count">6 varieties</span>
+    </div>
+    <div class="food-grid food-grid-3">
+      <div class="food-card reveal reveal-delay-1">
+        <div class="food-card-img pkl-1"><span class="food-emoji">🥭</span></div>
+        <div class="food-card-info">
+          <div class="food-card-name">Raw Mango Pickle</div>
+          <div class="food-card-desc">Tangy raw mango pieces marinated in mustard oil, red chilli &amp; traditional Andhra spices.</div>
+          <span class="food-card-tag tag-pkl">Avakaya</span>
+        </div>
       </div>
-      <div>
-        <div class="footer-col-title">Contact</div>
-        <ul class="footer-links">
-          <li><a href="tel:+919620397279">+91 9620397279</a></li>
-          <li><a href="mailto:godhashabarifoods@gmail.com">godhashabarifoods@gmail.com</a></li>
-          <li><a href="#contact">Akshayanagar, Bengaluru<br>560076</a></li>
-        </ul>
+      <div class="food-card reveal reveal-delay-2">
+        <div class="food-card-img pkl-2"><span class="food-emoji">🍋</span></div>
+        <div class="food-card-info">
+          <div class="food-card-name">Lemon Pickle</div>
+          <div class="food-card-desc">Sun-dried lemon pickle with a sharp tangy punch, seasoned with mustard and fenugreek.</div>
+          <span class="food-card-tag tag-pkl">Nimmakaya</span>
+        </div>
+      </div>
+      <div class="food-card reveal reveal-delay-3">
+        <div class="food-card-img pkl-3"><span class="food-emoji">🌶️</span></div>
+        <div class="food-card-info">
+          <div class="food-card-name">Green Chilli Pickle</div>
+          <div class="food-card-desc">Fiery green chillies stuffed with mustard and spice paste — a classic Andhra staple.</div>
+          <span class="food-card-tag tag-pkl">Mirapakaya</span>
+        </div>
+      </div>
+      <div class="food-card reveal reveal-delay-1">
+        <div class="food-card-img pkl-4"><span class="food-emoji">🫚</span></div>
+        <div class="food-card-info">
+          <div class="food-card-name">Gongura Pickle</div>
+          <div class="food-card-desc">Sorrel leaves slow-cooked with red chillies and seasoning — the pride of Andhra cuisine.</div>
+          <span class="food-card-tag tag-pkl">Gongura</span>
+        </div>
+      </div>
+      <div class="food-card reveal reveal-delay-2">
+        <div class="food-card-img pkl-5"><span class="food-emoji">🧅</span></div>
+        <div class="food-card-info">
+          <div class="food-card-name">Mixed Veg Pickle</div>
+          <div class="food-card-desc">A medley of seasonal vegetables pickled together with aromatic Andhra masala blend.</div>
+          <span class="food-card-tag tag-pkl">Mixed</span>
+        </div>
+      </div>
+      <div class="food-card reveal reveal-delay-3">
+        <div class="food-card-img pkl-6"><span class="food-emoji">🫙</span></div>
+        <div class="food-card-info">
+          <div class="food-card-name">Tomato Pickle</div>
+          <div class="food-card-desc">Slow-cooked tomatoes with tamarind and a robust tempering of mustard and dry red chilli.</div>
+          <span class="food-card-tag tag-pkl">Tomato</span>
+        </div>
       </div>
     </div>
-    <div class="footer-bottom">
-      <span>&copy; 2025 Sri Godha Shabari Andhra Home Foods. All rights reserved.</span>
-      <span>Made with <span class="footer-saffron">♥</span> in Bengaluru</span>
+  </div>
+</section>
+
+<hr class="section-divider"/>
+
+<!-- Sweets Gallery -->
+<section id="sweets" class="section-alt">
+  <div class="gallery-section reveal">
+    <div class="gallery-section-header">
+      <div>
+        <div class="section-label">Traditional Mithai</div>
+        <h2 class="section-heading">Authentic <em>Sweets</em></h2>
+      </div>
+      <span class="gallery-count">6 varieties</span>
     </div>
-  </footer>
+    <div class="food-grid food-grid-3">
+      <div class="food-card reveal reveal-delay-1">
+        <div class="food-card-img swt-1"><span class="food-emoji">🍬</span></div>
+        <div class="food-card-info">
+          <div class="food-card-name">Tapeswaram Kaja</div>
+          <div class="food-card-desc">Crisp layered sweet soaked in sugar syrup — a GI-tagged Andhra delicacy from East Godavari.</div>
+          <span class="food-card-tag tag-swt">Signature</span>
+        </div>
+      </div>
+      <div class="food-card reveal reveal-delay-2">
+        <div class="food-card-img swt-2"><span class="food-emoji">🧁</span></div>
+        <div class="food-card-info">
+          <div class="food-card-name">Putharekulu</div>
+          <div class="food-card-desc">Tissue-thin rice paper rolls filled with jaggery, dry fruits &amp; ghee — melt-in-mouth magic.</div>
+          <span class="food-card-tag tag-swt">Specialty</span>
+        </div>
+      </div>
+      <div class="food-card reveal reveal-delay-3">
+        <div class="food-card-img swt-3"><span class="food-emoji">🍮</span></div>
+        <div class="food-card-info">
+          <div class="food-card-name">Special Palakova</div>
+          <div class="food-card-desc">Rich milk-reduced fudge with cardamom and saffron — slow-cooked to creamy perfection.</div>
+          <span class="food-card-tag tag-swt">Milk Sweet</span>
+        </div>
+      </div>
+      <div class="food-card reveal reveal-delay-1">
+        <div class="food-card-img swt-4"><span class="food-emoji">🟠</span></div>
+        <div class="food-card-info">
+          <div class="food-card-name">Laddu</div>
+          <div class="food-card-desc">Boondi laddus made with pure ghee, besan and fragrant cardamom — perfect for celebrations.</div>
+          <span class="food-card-tag tag-swt">Festive</span>
+        </div>
+      </div>
+      <div class="food-card reveal reveal-delay-2">
+        <div class="food-card-img swt-5"><span class="food-emoji">🍯</span></div>
+        <div class="food-card-info">
+          <div class="food-card-name">Pootharekulu with Jaggery</div>
+          <div class="food-card-desc">The traditional jaggery variant of Putharekulu — unrefined sweetness wrapped in rice paper.</div>
+          <span class="food-card-tag tag-swt">Jaggery</span>
+        </div>
+      </div>
+      <div class="food-card reveal reveal-delay-3">
+        <div class="food-card-img swt-6"><span class="food-emoji">🌸</span></div>
+        <div class="food-card-info">
+          <div class="food-card-name">Mysore Pak</div>
+          <div class="food-card-desc">Classic ghee-rich besan sweet with a melt-away texture and a delicate cardamom note.</div>
+          <span class="food-card-tag tag-swt">Classic</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-  <script>
-    /* Scroll reveal */
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
-    }, { threshold: .12 });
-    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+<hr class="section-divider"/>
 
-    /* Mobile menu */
-    function toggleMenu() {
-      document.getElementById('navLinks').classList.toggle('open');
-    }
-    function closeMenu() {
-      document.getElementById('navLinks').classList.remove('open');
-    }
+<!-- Snacks Gallery -->
+<section id="snacks">
+  <div class="gallery-section reveal">
+    <div class="gallery-section-header">
+      <div>
+        <div class="section-label">Crispy &amp; Savoury</div>
+        <h2 class="section-heading">Traditional <em>Snacks</em></h2>
+      </div>
+      <span class="gallery-count">4 varieties</span>
+    </div>
+    <div class="food-grid food-grid-4">
+      <div class="food-card reveal reveal-delay-1">
+        <div class="food-card-img snk-1"><span class="food-emoji">🌾</span></div>
+        <div class="food-card-info">
+          <div class="food-card-name">Muruku</div>
+          <div class="food-card-desc">Crispy rice flour spirals seasoned with cumin, sesame and a hint of red chilli.</div>
+          <span class="food-card-tag tag-snk">Crunchy</span>
+        </div>
+      </div>
+      <div class="food-card reveal reveal-delay-2">
+        <div class="food-card-img snk-2"><span class="food-emoji">🫘</span></div>
+        <div class="food-card-info">
+          <div class="food-card-name">Chegodilu</div>
+          <div class="food-card-desc">Ring-shaped Andhra snack with a subtle spice — a timeless tea-time favourite.</div>
+          <span class="food-card-tag tag-snk">Andhra Classic</span>
+        </div>
+      </div>
+      <div class="food-card reveal reveal-delay-3">
+        <div class="food-card-img snk-3"><span class="food-emoji">🍘</span></div>
+        <div class="food-card-info">
+          <div class="food-card-name">Mixture</div>
+          <div class="food-card-desc">A zesty blend of sev, peanuts, poha flakes and curry leaves — spiced just right.</div>
+          <span class="food-card-tag tag-snk">Mixed</span>
+        </div>
+      </div>
+      <div class="food-card reveal">
+        <div class="food-card-img snk-4"><span class="food-emoji">🌶️</span></div>
+        <div class="food-card-info">
+          <div class="food-card-name">Podi (Spice Powder)</div>
+          <div class="food-card-desc">Idli podi, gun powder &amp; karam podi — homemade spice blends to elevate every meal.</div>
+          <span class="food-card-tag tag-snk">Podi</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-    /* Form */
-    function handleSubmit(e) {
-      e.preventDefault();
-      const s = document.getElementById('form-success');
-      s.style.display = 'block';
-      e.target.reset();
-      setTimeout(() => s.style.display = 'none', 6000);
-    }
+<hr class="section-divider"/>
 
-    /* Active nav highlight on scroll */
-    const sections = document.querySelectorAll('section[id]');
-    window.addEventListener('scroll', () => {
-      let current = '';
-      sections.forEach(s => {
-        if (window.scrollY >= s.offsetTop - 120) current = s.id;
-      });
-      document.querySelectorAll('.nav-links a').forEach(a => {
-        a.style.color = a.getAttribute('href') === '#' + current ? 'var(--saffron)' : '';
-      });
+<!-- Contact -->
+<section class="section-alt">
+  <div id="contact" class="contact-inner reveal">
+    <div class="contact-info">
+      <div class="section-label">Get in Touch</div>
+      <h2 class="section-heading">Place your <em>order</em> today</h2>
+      <p>Ready to order or have a question? We'd love to hear from you. Reach out directly or fill in the form and we'll get back to you promptly.</p>
+
+      <div class="contact-cards">
+        <div class="contact-card">
+          <div class="contact-card-icon">📞</div>
+          <div class="contact-card-text">
+            <small>Phone / WhatsApp</small>
+            <span>+91 9620397279</span>
+          </div>
+        </div>
+        <div class="contact-card">
+          <div class="contact-card-icon">✉️</div>
+          <div class="contact-card-text">
+            <small>Email</small>
+            <span>godhashabarifoods@gmail.com</span>
+          </div>
+        </div>
+        <div class="contact-card">
+          <div class="contact-card-icon">📍</div>
+          <div class="contact-card-text">
+            <small>Address</small>
+            <span>SNN Raj Serenity, Suraksha Nagar, Yelenahalli, Akshayanagar, Bengaluru – 560076</span>
+          </div>
+        </div>
+        <div class="contact-card">
+          <div class="contact-card-icon">🕐</div>
+          <div class="contact-card-text">
+            <small>Order Lead Time</small>
+            <span>Fresh orders: 24–48 hrs advance notice</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <form class="contact-form" onsubmit="handleSubmit(event)">
+      <div class="form-title">Send us a message 🙏</div>
+      <div class="form-sub">For bulk orders, please mention quantity and date needed.</div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="name">Your Name</label>
+          <input type="text" id="name" placeholder="Ravi Kumar" required/>
+        </div>
+        <div class="form-group">
+          <label for="phone">Phone Number</label>
+          <input type="tel" id="phone" placeholder="+91 98765 43210" required/>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email (Optional)</label>
+        <input type="email" id="email" placeholder="you@example.com"/>
+      </div>
+
+      <div class="form-group">
+        <label for="item">What are you ordering?</label>
+        <select id="item">
+          <option value="" disabled selected>Select a category…</option>
+          <option>Pickles / Pachadis</option>
+          <option>Sweets — Kaja / Putharekulu / Palakova</option>
+          <option>Snacks — Muruku / Chegodilu / Mixture</option>
+          <option>Podi / Spice Powders</option>
+          <option>Bulk / Catering Order</option>
+          <option>Mixed Assortment</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="message">Message / Quantity / Special Request</label>
+        <textarea id="message" placeholder="E.g. 2 kg mango pickle, 1 kg Kaja, required by Sunday…" required></textarea>
+      </div>
+
+      <div class="form-submit-row">
+        <button type="submit" class="btn-form-submit">
+          Send Order Request
+          <svg width="14" height="10" viewBox="0 0 18 10" fill="none"><path d="M1 5h16M12 1l5 4-5 4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+        <span class="form-note">We'll reply within a few hours</span>
+      </div>
+      <p id="form-success">✅ Thank you! We'll get back to you shortly with confirmation.</p>
+    </form>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand-name">Sri Godha Shabari</div>
+      <div class="footer-brand-tagline">Andhra Home Foods — Truly Delicious</div>
+      <p class="footer-brand-desc">Home-made Andhra sweets, snacks and pickles prepared with love and delivered fresh to your door. Proudly serving families and events across Bengaluru.</p>
+    </div>
+    <div>
+      <div class="footer-col-title">Quick Links</div>
+      <ul class="footer-links">
+        <li><a href="#about">About Us</a></li>
+        <li><a href="#pickles">Pickles</a></li>
+        <li><a href="#sweets">Sweets</a></li>
+        <li><a href="#snacks">Snacks</a></li>
+        <li><a href="#contact">Order Now</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Contact</div>
+      <ul class="footer-links">
+        <li><a href="tel:+919620397279">+91 9620397279</a></li>
+        <li><a href="mailto:godhashabarifoods@gmail.com">godhashabarifoods@gmail.com</a></li>
+        <li><a href="#contact">Akshayanagar, Bengaluru<br>560076</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; 2025 Sri Godha Shabari Andhra Home Foods. All rights reserved.</span>
+    <span>Made with <span class="footer-saffron">♥</span> in Bengaluru</span>
+  </div>
+</footer>
+
+<script>
+  /* ── Scroll reveal ── */
+  const revealEls = document.querySelectorAll('.reveal');
+
+  function checkVisible() {
+    revealEls.forEach(el => {
+      if (el.getBoundingClientRect().top < window.innerHeight + 80)
+        el.classList.add('visible');
     });
-  </script>
-</body>
-</html>
+  }
+  checkVisible();
+
+  const revealObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        revealObserver.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0, rootMargin: '0px 0px -60px 0px' });
+  revealEls.forEach(el => revealObserver.observe(el));
+
+  /* ── Mobile menu ── */
+  function toggleMenu() {
+    const overlay = document.getElementById('mobileMenu');
+    const btn     = document.getElementById('hamburger');
+    const isOpen  = overlay.classList.toggle('open');
+    btn.classList.toggle('active', isOpen);
+    // prevent body scroll when menu is open
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+  }
+
+  function closeMenu() {
+    document.getElementById('mobileMenu').classList.remove('open');
+    document.getElementById('hamburger').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  // Close menu if user clicks the overlay backdrop directly
+  document.getElementById('mobileMenu').addEventListener('click', function(e) {
+    if (e.target === this) closeMenu();
+  });
+
+  // Close menu on Escape key
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeMenu();
+  });
+
+  /* ── Form ── */
+  function handleSubmit(e) {
+    e.preventDefault();
+    const s = document.getElementById('form-success');
+    s.style.display = 'block';
+    e.target.reset();
+    setTimeout(() => s.style.display = 'none', 6000);
+  }
+
+  /* ── Active nav highlight on scroll ── */
+  const sections = document.querySelectorAll('section[id]');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 120) current = s.id;
+    });
+    document.querySelectorAll('.nav-links a').forEach(a => {
+      a.style.color = a.getAttribute('href') === '#' + current ? 'var(--saffron)' : '';
+    });
+  });
+</script>
